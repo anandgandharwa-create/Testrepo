@@ -20,139 +20,31 @@ body{
   min-height:100vh;
   background:linear-gradient(180deg,#050b2e,#020617);
 }
-.page{
-  display:none;
-  padding:18px;
-  animation:fade .35s ease;
-}
+.page{display:none;padding:18px;animation:fade .35s ease;}
 .active{display:block;}
-@keyframes fade{
-  from{opacity:0;transform:translateY(6px);}
-  to{opacity:1;transform:none;}
-}
-
-.topbar{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  padding:14px 18px;
-}
+@keyframes fade{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}
+.topbar{display:flex;justify-content:space-between;align-items:center;padding:14px 18px;}
 .brand{font-size:20px;font-weight:600;}
-.toggle{
-  padding:6px 14px;
-  border-radius:18px;
-  background:rgba(255,255,255,.14);
-  font-size:13px;
-  cursor:pointer;
-}
-
-header{
-  text-align:center;
-  font-size:23px;
-  font-weight:600;
-  margin-bottom:14px;
-}
-
-.card{
-  background:rgba(255,255,255,.08);
-  border-radius:18px;
-  padding:16px;
-  margin-bottom:14px;
-}
-
-.option{
-  display:flex;
-  align-items:center;
-  padding:12px 14px;
-  margin:8px 0;
-  border-radius:14px;
-  background:rgba(255,255,255,.06);
-}
+.toggle{padding:6px 14px;border-radius:18px;background:rgba(255,255,255,.14);font-size:13px;cursor:pointer;}
+header{text-align:center;font-size:23px;font-weight:600;margin-bottom:14px;}
+.card{background:rgba(255,255,255,.08);border-radius:18px;padding:16px;margin-bottom:14px;}
+.option{display:flex;align-items:center;padding:12px 14px;margin:8px 0;border-radius:14px;background:rgba(255,255,255,.06);}
 .option input{margin-right:10px;}
-
-button{
-  width:100%;
-  padding:15px;
-  font-size:17px;
-  border:none;
-  border-radius:28px;
-  background:linear-gradient(45deg,#00f2ff,#00ff9c);
-  color:#000;
-  margin-top:18px;
-  cursor:pointer;
-}
-
-.meter-bar{
-  height:18px;
-  border-radius:18px;
-  background:#1a1a1a;
-  overflow:hidden;
-}
-.meter-fill{
-  height:100%;
-  width:0%;
-  transition:width 1s;
-}
+button{width:100%;padding:15px;font-size:17px;border:none;border-radius:28px;background:linear-gradient(45deg,#00f2ff,#00ff9c);color:#000;margin-top:18px;cursor:pointer;}
+.meter-bar{height:18px;border-radius:18px;background:#1a1a1a;overflow:hidden;}
+.meter-fill{height:100%;width:0%;transition:width 1s;}
 .meter-fill.red{background:#ff4d4d;}
 .meter-fill.yellow{background:#ffd633;}
 .meter-fill.green{background:#33ff88;}
-.meter-text{
-  text-align:center;
-  margin-top:10px;
-  font-size:16px;
-}
-
-.wheel-box{
-  position:relative;
-  width:230px;
-  height:230px;
-  margin:26px auto;
-}
-.wheel{
-  width:100%;
-  height:100%;
-  border-radius:50%;
-  background:conic-gradient(
-    #ff4d4d,#ffd633,#33ff88,#00ffd5,#0066ff,#8a00ff,#ff4d4d
-  );
-  transition:transform 4s cubic-bezier(.17,.67,.14,.93);
-}
-.wheel.glow{
-  animation:glow 1.2s infinite alternate;
-}
-@keyframes glow{
-  from{box-shadow:0 0 12px rgba(0,255,255,.4);}
-  to{box-shadow:0 0 26px rgba(0,255,255,.9);}
-}
-.pointer{
-  position:absolute;
-  top:-12px;
-  left:50%;
-  transform:translateX(-50%);
-  border-left:12px solid transparent;
-  border-right:12px solid transparent;
-  border-bottom:20px solid #fff;
-}
-
-/* 🧘 Meditation hidden initially */
-.meditation{
-  margin-top:14px;
-  padding:14px;
-  border-radius:14px;
-  background:rgba(255,255,255,.1);
-  font-size:15px;
-  line-height:1.5;
-  opacity:0;
-  display:none;
-}
-.meditation.show{
-  display:block;
-  animation:fadeIn 1s ease forwards;
-}
-@keyframes fadeIn{
-  from{opacity:0;}
-  to{opacity:1;}
-}
+.meter-text{text-align:center;margin-top:10px;font-size:16px;}
+.wheel-box{position:relative;width:230px;height:230px;margin:26px auto;}
+.wheel{width:100%;height:100%;border-radius:50%;background:conic-gradient(#ff4d4d,#ffd633,#33ff88,#00ffd5,#0066ff,#8a00ff,#ff4d4d);transition:transform 4s cubic-bezier(.17,.67,.14,.93);}
+.wheel.glow{animation:glow 1.2s infinite alternate;}
+@keyframes glow{from{box-shadow:0 0 12px rgba(0,255,255,.4);}to{box-shadow:0 0 26px rgba(0,255,255,.9);}}
+.pointer{position:absolute;top:-12px;left:50%;transform:translateX(-50%);border-left:12px solid transparent;border-right:12px solid transparent;border-bottom:20px solid #fff;}
+.meditation{margin-top:14px;padding:14px;border-radius:14px;background:rgba(255,255,255,.1);font-size:15px;line-height:1.5;opacity:0;display:none;}
+.meditation.show{display:block;animation:fadeIn 1s ease forwards;}
+@keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
 </style>
 </head>
 
@@ -213,7 +105,8 @@ button{
 <script>
 let lang="hi",score=0,zone="",spun=false;
 
-const questions=[
+/* ✅ FIXED: renamed question bank */
+const questionBank=[
 {
  hi:"आज मन सबसे ज़्यादा किस बात पर अटका रहा?",
  en:"What occupied your mind the most today?",
@@ -251,12 +144,13 @@ const questions=[
 }
 ];
 
+const questionsEl=document.getElementById("questions");
 let activeQs=[];
 
 function startTest(){
   landing.classList.remove("active");
   page1.classList.add("active");
-  activeQs=[...questions].sort(()=>0.5-Math.random()).slice(0,5);
+  activeQs=[...questionBank].sort(()=>0.5-Math.random()).slice(0,5);
   renderQuestions();
 }
 
@@ -270,7 +164,7 @@ function renderQuestions(){
     });
     h+="<hr style='opacity:.2'>";
   });
-  questions.innerHTML=h;
+  questionsEl.innerHTML=h;
 }
 
 function goMeter(){
