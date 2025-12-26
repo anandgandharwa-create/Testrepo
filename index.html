@@ -1,1 +1,230 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mind OS – Mental Pollution Index</title>
 
+<style>
+body{
+  margin:0;
+  font-family:Segoe UI,Arial;
+  background:linear-gradient(180deg,#050b2e,#020617);
+  color:#fff;
+}
+.page{display:none;padding:22px;}
+.active{display:block;}
+
+.topbar{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:16px 18px;
+}
+.brand{font-size:22px;font-weight:600;}
+.toggle{
+  padding:6px 14px;border-radius:20px;
+  background:rgba(255,255,255,0.15);
+  font-size:14px;cursor:pointer;
+}
+
+header{text-align:center;font-size:26px;font-weight:600;margin-bottom:12px;}
+.card{
+  background:rgba(255,255,255,0.08);
+  backdrop-filter:blur(12px);
+  border-radius:18px;
+  padding:18px;
+  margin-bottom:16px;
+}
+
+.option{
+  display:block;
+  padding:10px 12px;
+  margin:6px 0;
+  border-radius:12px;
+  background:rgba(255,255,255,0.06);
+}
+.option input{margin-right:10px;}
+
+button{
+  width:100%;
+  padding:16px;
+  font-size:18px;
+  border:none;
+  border-radius:30px;
+  background:linear-gradient(45deg,#00f2ff,#00ff9c);
+  color:#000;
+  margin-top:18px;
+  cursor:pointer;
+}
+
+/* Meter */
+.meter-bar{height:22px;border-radius:20px;background:#1a1a1a;overflow:hidden;}
+.meter-fill{height:100%;width:0%;transition:width 1s;border-radius:20px;}
+.meter-fill.red{background:#ff4d4d;}
+.meter-fill.yellow{background:#ffd633;}
+.meter-fill.green{background:#33ff88;}
+.meter-text{text-align:center;margin-top:8px;font-size:18px;}
+
+/* Spin */
+.wheel-box{position:relative;width:260px;height:260px;margin:30px auto;}
+.wheel{
+  width:100%;height:100%;
+  border-radius:50%;
+  background:conic-gradient(#ff4d4d,#ffd633,#33ff88,#00ffd5,#0066ff,#8a00ff,#ff4d4d);
+  transition:transform 4s cubic-bezier(.17,.67,.14,.93);
+}
+.wheel.glow{
+  animation: glow 1.2s infinite alternate;
+}
+@keyframes glow{
+  from{box-shadow:0 0 14px rgba(0,255,255,.5);}
+  to{box-shadow:0 0 30px rgba(0,255,255,.95);}
+}
+.pointer{
+  position:absolute;top:-14px;left:50%;
+  transform:translateX(-50%);
+  width:0;height:0;
+  border-left:14px solid transparent;
+  border-right:14px solid transparent;
+  border-bottom:22px solid #fff;
+}
+</style>
+</head>
+
+<body>
+
+<div class="topbar">
+  <div class="brand">Mind OS</div>
+  <div class="toggle" onclick="toggleLang()">🌍 हिंदी / EN</div>
+</div>
+
+<!-- LANDING -->
+<div class="page active" id="landing">
+<header>🧠 आज का मन</header>
+<div class="card">
+यह एक free daily mind check है जो बताता है कि अभी निर्णय लेना उचित है या नहीं।
+</div>
+<button onclick="startTest()">आज का टेस्ट करें</button>
+</div>
+
+<!-- QUESTIONS -->
+<div class="page" id="page1">
+<header>🌪 मानसिक प्रदूषण सूचकांक</header>
+<div class="card" id="questions"></div>
+<button onclick="goMeter()">मीटर देखें</button>
+</div>
+
+<!-- METER -->
+<div class="page" id="page2">
+<header>📊 Mental Pollution Index</header>
+<div class="meter-bar"><div class="meter-fill" id="meterFill"></div></div>
+<div class="meter-text" id="meterText"></div>
+<button onclick="goSpin()">Next → Spin</button>
+</div>
+
+<!-- SPIN -->
+<div class="page" id="page3">
+<header>🎯 Decision Spin</header>
+<div class="wheel-box">
+  <div class="pointer"></div>
+  <div class="wheel" id="wheel"></div>
+</div>
+<button onclick="spinNow()">Spin</button>
+</div>
+
+<!-- DECISION -->
+<div class="page" id="page4">
+<header>🔒 Decision Insight</header>
+<div class="card">
+<p id="decisionText"></p>
+</div>
+<button onclick="location.reload()">Done</button>
+</div>
+
+<script>
+let score=0,zone="",spun=false;
+
+/* ✅ ADVANCED QUESTION BANK – WEEK 1 */
+const questionPool=[
+{
+ q:"आज मन को शांत रखने में कितनी कठिनाई महसूस हुई?",
+ options:["काफ़ी ज़्यादा","थोड़ी","लगभग नहीं"],
+ scores:[3,2,1]
+},
+{
+ q:"आज दिन में मानसिक भारीपन किस हद तक महसूस हुआ?",
+ options:["काफ़ी ज़्यादा","थोड़ा","लगभग नहीं"],
+ scores:[3,2,1]
+},
+{
+ q:"आज डर ने आपके मन पर कितनी पकड़ बनाई?",
+ options:["काफ़ी ज़्यादा","थोड़ी","लगभग नहीं"],
+ scores:[3,2,1]
+},
+{
+ q:"आज मन सबसे ज़्यादा किस बात पर अटका रहा?",
+ options:["बीते विचार","आने वाली चिंता","किसी व्यक्ति या स्थिति पर"],
+ scores:[3,2,2]
+},
+{
+ q:"अगर आज निर्णय लेना पड़े, तो मन किस वजह से हिचकेगा?",
+ options:["गलत निर्णय का डर","अनिश्चित परिणाम","मन की थकान"],
+ scores:[3,2,2]
+}
+];
+
+let activeQs=[];
+
+function startTest(){
+  landing.classList.remove("active");
+  page1.classList.add("active");
+  activeQs=[...questionPool].sort(()=>0.5-Math.random()).slice(0,5);
+  renderQuestions();
+}
+
+function renderQuestions(){
+  let h="";
+  activeQs.forEach((q,i)=>{
+    h+=`<strong>${i+1}. ${q.q}</strong>`;
+    q.options.forEach((op,j)=>{
+      h+=`
+      <label class="option">
+        <input type="radio" name="q${i}" value="${q.scores[j]}"> ${op}
+      </label>`;
+    });
+    h+="<hr style='opacity:.2'>";
+  });
+  questions.innerHTML=h;
+}
+
+function goMeter(){
+  score=0;
+  for(let i=0;i<5;i++){
+    let a=document.querySelector(`input[name="q${i}"]:checked`);
+    if(!a){alert("सभी प्रश्नों के उत्तर दें");return;}
+    score+=parseInt(a.value);
+  }
+  page1.classList.remove("active");
+  page2.classList.add("active");
+
+  let p=Math.round((score/15)*100);
+  meterFill.style.width=p+"%";
+  meterFill.className="meter-fill";
+
+  if(p>70){zone="red";meterFill.classList.add("red");meterText.innerText="High Mental Pollution";}
+  else if(p>40){zone="yellow";meterFill.classList.add("yellow");meterText.innerText="Moderate Mental Pollution";}
+  else{zone="green";meterFill.classList.add("green");meterText.innerText="Low Mental Pollution";}
+}
+
+function goSpin(){page2.classList.remove("active");page3.classList.add("active");}
+
+function spinNow(){
+  if(spun)return;
+  spun=true;
+  wheel.classList.add("glow");
+  wheel.style.transform="rotate("+(zone==="red"?1470:zone==="yellow"?1590:1710)+"deg)";
+  setTimeout(()=>{page3.classList.remove("active");page4.classList.add("active");},4000);
+}
+</script>
+
+</body>
+</html>
