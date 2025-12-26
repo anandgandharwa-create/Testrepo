@@ -6,66 +6,148 @@
 <title>Mind OS – Mental Pollution Index</title>
 
 <style>
+/* 🌌 BACKGROUND */
 body{
   margin:0;
-  font-family:Segoe UI,Arial;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial;
   background:linear-gradient(180deg,#050b2e,#020617);
   color:#fff;
+  display:flex;
+  justify-content:center;
 }
-.page{display:none;padding:22px;}
+
+/* 📱 APP SHELL */
+.app-shell{
+  width:100%;
+  max-width:420px;
+  min-height:100vh;
+  background:linear-gradient(180deg,#050b2e,#020617);
+  padding-bottom:24px;
+}
+
+/* SAFE AREA */
+.safe-top{height:14px;}
+
+/* PAGE */
+.page{
+  display:none;
+  padding:18px;
+  animation:fade .35s ease;
+}
 .active{display:block;}
+@keyframes fade{
+  from{opacity:0;transform:translateY(6px);}
+  to{opacity:1;transform:none;}
+}
 
+/* TOP BAR */
 .topbar{
-  display:flex;justify-content:space-between;align-items:center;
-  padding:16px 18px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:14px 18px 10px;
 }
-.brand{font-size:22px;font-weight:600;}
+.brand{
+  font-size:20px;
+  font-weight:600;
+  letter-spacing:.3px;
+}
 .toggle{
-  padding:6px 14px;border-radius:20px;
-  background:rgba(255,255,255,0.15);
-  font-size:14px;cursor:pointer;
+  padding:6px 14px;
+  border-radius:18px;
+  background:rgba(255,255,255,0.14);
+  font-size:13px;
+  cursor:pointer;
 }
 
-header{text-align:center;font-size:26px;font-weight:600;margin-bottom:12px;}
+/* HEADERS */
+header{
+  text-align:center;
+  font-size:23px;
+  font-weight:600;
+  margin-bottom:14px;
+  letter-spacing:.3px;
+}
+
+/* CARD */
 .card{
   background:rgba(255,255,255,0.08);
-  backdrop-filter:blur(12px);
+  border:1px solid rgba(255,255,255,.06);
+  backdrop-filter:blur(14px);
   border-radius:18px;
-  padding:18px;
-  margin-bottom:16px;
+  padding:16px;
+  margin-bottom:14px;
+  box-shadow:0 12px 24px rgba(0,0,0,.35);
 }
 
+/* QUESTIONS */
+.question{
+  margin-bottom:14px;
+  line-height:1.5;
+  font-size:15.5px;
+}
+
+/* OPTIONS */
 .option{
-  display:block;
-  padding:10px 12px;
-  margin:6px 0;
-  border-radius:12px;
+  display:flex;
+  align-items:center;
+  padding:12px 14px;
+  margin:8px 0;
+  border-radius:14px;
   background:rgba(255,255,255,0.06);
+  cursor:pointer;
+  transition:.25s;
 }
+.option:hover{background:rgba(255,255,255,0.1);}
 .option input{margin-right:10px;}
+.option input:checked + span{
+  color:#7dffe5;
+  font-weight:600;
+}
 
+/* BUTTON */
 button{
   width:100%;
-  padding:16px;
-  font-size:18px;
+  padding:15px;
+  font-size:17px;
   border:none;
-  border-radius:30px;
+  border-radius:28px;
   background:linear-gradient(45deg,#00f2ff,#00ff9c);
   color:#000;
   margin-top:18px;
   cursor:pointer;
+  transition:.2s;
 }
+button:active{transform:scale(.97);}
 
-/* Meter */
-.meter-bar{height:22px;border-radius:20px;background:#1a1a1a;overflow:hidden;}
-.meter-fill{height:100%;width:0%;transition:width 1s;border-radius:20px;}
+/* METER */
+.meter-bar{
+  height:18px;
+  border-radius:18px;
+  background:#1a1a1a;
+  overflow:hidden;
+}
+.meter-fill{
+  height:100%;
+  width:0%;
+  transition:width 1s;
+}
 .meter-fill.red{background:#ff4d4d;}
 .meter-fill.yellow{background:#ffd633;}
 .meter-fill.green{background:#33ff88;}
-.meter-text{text-align:center;margin-top:8px;font-size:18px;}
+.meter-text{
+  text-align:center;
+  margin-top:10px;
+  font-size:16px;
+}
 
-/* Spin */
-.wheel-box{position:relative;width:260px;height:260px;margin:30px auto;}
+/* SPIN */
+.wheel-box{
+  position:relative;
+  width:230px;
+  height:230px;
+  margin:26px auto;
+}
 .wheel{
   width:100%;height:100%;
   border-radius:50%;
@@ -73,35 +155,38 @@ button{
   transition:transform 4s cubic-bezier(.17,.67,.14,.93);
 }
 .wheel.glow{
-  animation: glow 1.2s infinite alternate;
+  animation:glow 1.2s infinite alternate;
 }
 @keyframes glow{
-  from{box-shadow:0 0 14px rgba(0,255,255,.5);}
-  to{box-shadow:0 0 30px rgba(0,255,255,.95);}
+  from{box-shadow:0 0 12px rgba(0,255,255,.4);}
+  to{box-shadow:0 0 26px rgba(0,255,255,.9);}
 }
 .pointer{
-  position:absolute;top:-14px;left:50%;
+  position:absolute;
+  top:-12px;
+  left:50%;
   transform:translateX(-50%);
-  width:0;height:0;
-  border-left:14px solid transparent;
-  border-right:14px solid transparent;
-  border-bottom:22px solid #fff;
+  border-left:12px solid transparent;
+  border-right:12px solid transparent;
+  border-bottom:20px solid #fff;
 }
 </style>
 </head>
 
 <body>
+<div class="app-shell">
+<div class="safe-top"></div>
 
 <div class="topbar">
   <div class="brand">Mind OS</div>
-  <div class="toggle" onclick="toggleLang()">🌍 हिंदी / EN</div>
+  <div class="toggle">🌍 हिंदी / EN</div>
 </div>
 
 <!-- LANDING -->
 <div class="page active" id="landing">
 <header>🧠 आज का मन</header>
 <div class="card">
-यह एक free daily mind check है जो बताता है कि अभी निर्णय लेना उचित है या नहीं।
+यह एक free daily mind check है, जिससे आप जान सकते हैं कि अभी निर्णय लेना उचित है या नहीं।
 </div>
 <button onclick="startTest()">आज का टेस्ट करें</button>
 </div>
@@ -135,20 +220,21 @@ button{
 <div class="page" id="page4">
 <header>🔒 Decision Insight</header>
 <div class="card">
-<p id="decisionText"></p>
+<p>आपका मन जिस अवस्था में है, उसके अनुसार निर्णय लेने से पहले थोड़ी शांति और स्पष्टता उपयोगी रहेगी।</p>
 </div>
 <button onclick="location.reload()">Done</button>
+</div>
+
 </div>
 
 <script>
 let score=0,zone="",spun=false;
 
-/* ✅ ADVANCED QUESTION BANK – WEEK 1 */
 const questionPool=[
 {
- q:"आज मन को शांत रखने में कितनी कठिनाई महसूस हुई?",
- options:["काफ़ी ज़्यादा","थोड़ी","लगभग नहीं"],
- scores:[3,2,1]
+ q:"आज मन सबसे ज़्यादा किस बात पर अटका रहा?",
+ options:["बीते विचार","आने वाली चिंता","किसी व्यक्ति या स्थिति पर"],
+ scores:[3,2,2]
 },
 {
  q:"आज दिन में मानसिक भारीपन किस हद तक महसूस हुआ?",
@@ -156,19 +242,19 @@ const questionPool=[
  scores:[3,2,1]
 },
 {
+ q:"अगर आज निर्णय लेना पड़े, तो मन किस वजह से हिचकेगा?",
+ options:["गलत निर्णय का डर","अनिश्चित परिणाम","मन की थकान"],
+ scores:[3,2,2]
+},
+{
  q:"आज डर ने आपके मन पर कितनी पकड़ बनाई?",
  options:["काफ़ी ज़्यादा","थोड़ी","लगभग नहीं"],
  scores:[3,2,1]
 },
 {
- q:"आज मन सबसे ज़्यादा किस बात पर अटका रहा?",
- options:["बीते विचार","आने वाली चिंता","किसी व्यक्ति या स्थिति पर"],
- scores:[3,2,2]
-},
-{
- q:"अगर आज निर्णय लेना पड़े, तो मन किस वजह से हिचकेगा?",
- options:["गलत निर्णय का डर","अनिश्चित परिणाम","मन की थकान"],
- scores:[3,2,2]
+ q:"आज मन को शांत रखने में कितनी कठिनाई महसूस हुई?",
+ options:["काफ़ी ज़्यादा","थोड़ी","लगभग नहीं"],
+ scores:[3,2,1]
 }
 ];
 
@@ -184,14 +270,15 @@ function startTest(){
 function renderQuestions(){
   let h="";
   activeQs.forEach((q,i)=>{
-    h+=`<strong>${i+1}. ${q.q}</strong>`;
+    h+=`<div class="question"><strong>${i+1}. ${q.q}</strong>`;
     q.options.forEach((op,j)=>{
       h+=`
       <label class="option">
-        <input type="radio" name="q${i}" value="${q.scores[j]}"> ${op}
+        <input type="radio" name="q${i}" value="${q.scores[j]}">
+        <span>${op}</span>
       </label>`;
     });
-    h+="<hr style='opacity:.2'>";
+    h+="</div><hr style='opacity:.2'>";
   });
   questions.innerHTML=h;
 }
@@ -222,7 +309,10 @@ function spinNow(){
   spun=true;
   wheel.classList.add("glow");
   wheel.style.transform="rotate("+(zone==="red"?1470:zone==="yellow"?1590:1710)+"deg)";
-  setTimeout(()=>{page3.classList.remove("active");page4.classList.add("active");},4000);
+  setTimeout(()=>{
+    page3.classList.remove("active");
+    page4.classList.add("active");
+  },4000);
 }
 </script>
 
