@@ -42,12 +42,16 @@ header{text-align:center;font-size:23px;font-weight:600;margin-bottom:14px;}
   line-height:1.7;
 }
 
+/* OPTIONS with zone hint */
 .option{
   display:flex;align-items:center;
   padding:12px 14px;margin:8px 0;
   border-radius:14px;
   background:rgba(255,255,255,.06);
 }
+.option.red{background:rgba(255,80,80,.15);}
+.option.yellow{background:rgba(255,215,80,.15);}
+.option.green{background:rgba(80,255,160,.15);}
 .option input{margin-right:10px;}
 
 button{
@@ -64,25 +68,6 @@ button{
 .meter-fill.yellow{background:#ffd633;}
 .meter-fill.green{background:#33ff88;}
 .meter-text{text-align:center;margin-top:10px;font-size:16px;}
-
-/* Spin */
-.wheel-box{position:relative;width:220px;height:220px;margin:24px auto;}
-.wheel{
-  width:100%;height:100%;border-radius:50%;
-  background:conic-gradient(#ff4d4d,#ffd633,#33ff88,#00ffd5,#0066ff,#8a00ff,#ff4d4d);
-  transition:transform 4s cubic-bezier(.17,.67,.14,.93);
-}
-.wheel.glow{animation:glow 1.2s infinite alternate;}
-@keyframes glow{
-  from{box-shadow:0 0 12px rgba(0,255,255,.4);}
-  to{box-shadow:0 0 26px rgba(0,255,255,.9);}
-}
-.pointer{
-  position:absolute;top:-12px;left:50%;transform:translateX(-50%);
-  border-left:12px solid transparent;
-  border-right:12px solid transparent;
-  border-bottom:20px solid #fff;
-}
 
 /* Decision colors */
 .decision.red{color:#ff6b6b;}
@@ -133,16 +118,6 @@ button{
 <button onclick="goSpin()">Next → Spin</button>
 </div>
 
-<!-- SPIN -->
-<div class="page" id="page3">
-<header>🎯 Decision Spin</header>
-<div class="wheel-box">
-  <div class="pointer"></div>
-  <div class="wheel" id="wheel"></div>
-</div>
-<button onclick="spinNow()">Spin</button>
-</div>
-
 <!-- DECISION -->
 <div class="page" id="page4">
 <header>🔒 Decision Insight</header>
@@ -156,36 +131,60 @@ button{
 </div>
 
 <script>
-let lang="hi",score=0,zone="",spun=false;
+let lang="hi",score=0,zone="";
 
-/* 20 questions bank (sample 5 shown – आप weekly add कर सकते हैं) */
+/* 🔥 20 QUESTIONS BANK */
 const questionBank=[
-{hi:"आज मन सबसे ज़्यादा किस बात पर अटका रहा?",en:"What occupied your mind the most today?",optsHi:["बीते विचार","आने वाली चिंता","किसी व्यक्ति या स्थिति पर"],optsEn:["Past thoughts","Future worries","A person or situation"],scores:[3,2,2]},
-{hi:"आज दिन में मानसिक भारीपन कितना रहा?",en:"How heavy did your mind feel today?",optsHi:["काफ़ी ज़्यादा","थोड़ा","लगभग नहीं"],optsEn:["A lot","A little","Hardly"],scores:[3,2,1]},
-{hi:"आज निर्णय से पहले मन क्यों रुकेगा?",en:"Why would your mind hesitate before deciding today?",optsHi:["डर","अनिश्चितता","थकान"],optsEn:["Fear","Uncertainty","Fatigue"],scores:[3,2,2]},
-{hi:"आज मन को शांत रखना कितना कठिन था?",en:"How hard was it to stay calm today?",optsHi:["काफ़ी","थोड़ा","आसान"],optsEn:["Very hard","Somewhat","Easy"],scores:[3,2,1]},
-{hi:"आज नकारात्मकता कितनी हावी रही?",en:"How dominant was negativity today?",optsHi:["ज़्यादा","थोड़ी","न के बराबर"],optsEn:["High","Low","Almost none"],scores:[3,2,1]}
+"आज मन सबसे ज़्यादा किस बात पर अटका रहा?",
+"आज दिन में मानसिक भारीपन कितना रहा?",
+"आज मन को शांत रखना कितना कठिन था?",
+"आज डर ने कितनी पकड़ बनाई?",
+"आज निर्णय से पहले मन क्यों रुका?",
+"आज ध्यान कितनी बार भटका?",
+"आज मन ने भविष्य की चिंता कितनी की?",
+"आज आत्मविश्वास कितना स्थिर था?",
+"आज मन ने तुलना कितनी की?",
+"आज भावनाएँ कितनी हावी रहीं?",
+"आज निर्णय लेने में कितनी स्पष्टता थी?",
+"आज मन कितनी जल्दी थका?",
+"आज नकारात्मक विचार कितने आए?",
+"आज मन वर्तमान में कितना रहा?",
+"आज मन को स्थिर करने में कितना प्रयास लगा?",
+"आज आंतरिक शांति कितनी महसूस हुई?",
+"आज मन ने नियंत्रण कितना चाहा?",
+"आज निर्णय को टालने का मन क्यों किया?",
+"आज अपने ऊपर भरोसा कितना रहा?",
+"आज मन ने कितनी स्पष्ट दिशा महसूस की?"
 ];
 
-let activeQs=[];
 const questionsEl=document.getElementById("questions");
+let activeQs=[];
 
 function startTest(){
   landing.classList.remove("active");
   page1.classList.add("active");
-  activeQs=[...questionBank].sort(()=>0.5-Math.random()).slice(0,5);
+
+  activeQs=[...questionBank]
+    .sort(()=>0.5-Math.random())
+    .slice(0,5);
+
   renderQuestions();
 }
 
 function renderQuestions(){
   let h="";
   activeQs.forEach((q,i)=>{
-    h+=`<strong>${i+1}. ${lang==="hi"?q.hi:q.en}</strong>`;
-    const opts=lang==="hi"?q.optsHi:q.optsEn;
-    opts.forEach((op,j)=>{
-      h+=`<label class="option"><input type="radio" name="q${i}" value="${q.scores[j]}"> ${op}</label>`;
-    });
-    h+="<hr style='opacity:.2'>";
+    h+=`<strong>${i+1}. ${q}</strong>
+      <label class="option red">
+        <input type="radio" name="q${i}" value="3"> काफ़ी ज़्यादा
+      </label>
+      <label class="option yellow">
+        <input type="radio" name="q${i}" value="2"> थोड़ा
+      </label>
+      <label class="option green">
+        <input type="radio" name="q${i}" value="1"> लगभग नहीं
+      </label>
+      <hr style="opacity:.2">`;
   });
   questionsEl.innerHTML=h;
 }
@@ -194,7 +193,7 @@ function goMeter(){
   score=0;
   for(let i=0;i<5;i++){
     const a=document.querySelector(`input[name="q${i}"]:checked`);
-    if(!a){alert(lang==="hi"?"सभी प्रश्नों के उत्तर दें":"Answer all questions");return;}
+    if(!a){alert("सभी प्रश्नों के उत्तर दें");return;}
     score+=parseInt(a.value);
   }
   page1.classList.remove("active");
@@ -204,19 +203,9 @@ function goMeter(){
   meterFill.style.width=p+"%";
   meterFill.className="meter-fill";
 
-  if(p>70){zone="red";meterFill.classList.add("red");meterText.innerText=lang==="hi"?"अधिक मानसिक प्रदूषण":"High Mental Pollution";}
-  else if(p>40){zone="yellow";meterFill.classList.add("yellow");meterText.innerText=lang==="hi"?"मध्यम मानसिक प्रदूषण":"Moderate Mental Pollution";}
-  else{zone="green";meterFill.classList.add("green");meterText.innerText=lang==="hi"?"कम मानसिक प्रदूषण":"Low Mental Pollution";}
-}
-
-function goSpin(){page2.classList.remove("active");page3.classList.add("active");}
-
-function spinNow(){
-  if(spun)return;
-  spun=true;
-  wheel.classList.add("glow");
-  wheel.style.transform="rotate("+(zone==="red"?1470:zone==="yellow"?1590:1710)+"deg)";
-  setTimeout(showDecision,4000);
+  if(p>70){zone="red";meterFill.classList.add("red");meterText.innerText="High Mental Pollution";}
+  else if(p>40){zone="yellow";meterFill.classList.add("yellow");meterText.innerText="Moderate Mental Pollution";}
+  else{zone="green";meterFill.classList.add("green");meterText.innerText="Low Mental Pollution";}
 }
 
 /* word-by-word typing */
@@ -231,41 +220,37 @@ function typeByWords(text,el,cb){
   },160);
 }
 
-function showDecision(){
-  page3.classList.remove("active");
+function goSpin(){
+  page2.classList.remove("active");
   page4.classList.add("active");
+  showDecision();
+}
 
+function showDecision(){
   const decision={
-    hi:{red:"इस समय आपका मन दबाव और उलझन में है। निर्णय को थोड़ी देर टालना बेहतर होगा।",yellow:"आपका मन आंशिक रूप से स्पष्ट है। शांत होकर सोचने से निर्णय बेहतर होगा।",green:"आपका मन शांत और स्पष्ट है। आत्मविश्वास के साथ निर्णय लिया जा सकता है।"},
-    en:{red:"Your mind is under pressure and confusion. It is better to delay decisions.",yellow:"Your mind is partially clear. Calm reflection will improve your decision.",green:"Your mind is calm and clear. This is a good time to decide confidently."}
+    red:"इस समय आपका मन दबाव और उलझन में है। निर्णय को थोड़ी देर टालना बेहतर होगा।",
+    yellow:"आपका मन आंशिक रूप से स्पष्ट है। शांत होकर सोचने से निर्णय बेहतर होगा।",
+    green:"आपका मन शांत और स्पष्ट है। आत्मविश्वास के साथ निर्णय लिया जा सकता है।"
   };
-
   const meditation={
-    hi:{red:"🧘 3 मिनट श्वास पर ध्यान दें।",yellow:"🧘 5 गहरी साँस लें।",green:"🧘 कृतज्ञता के भाव में शांत बैठें।"},
-    en:{red:"🧘 Focus on breath for 3 minutes.",yellow:"🧘 Take 5 deep breaths.",green:"🧘 Sit calmly with gratitude."}
+    red:"🧘 3 मिनट श्वास पर ध्यान दें।",
+    yellow:"🧘 5 गहरी साँस लें।",
+    green:"🧘 कृतज्ञता के भाव में शांत बैठें।"
   };
 
   decisionText.className="decision "+zone;
   meditationText.classList.remove("show");
   meditationText.style.display="none";
 
-  typeByWords(decision[lang][zone],decisionText,()=>{
-    meditationText.innerText=meditation[lang][zone];
+  typeByWords(decision[zone],decisionText,()=>{
+    meditationText.innerText=meditation[zone];
     meditationText.style.display="block";
     meditationText.classList.add("show");
   });
 }
 
 function toggleLang(){
-  lang=lang==="hi"?"en":"hi";
-  landingTitle.innerText=lang==="hi"?"🧠 आज का मन":"🧠 Today's Mind";
-  landingText.innerText=lang==="hi"
-    ?"यह एक free daily mind check है जो बताता है कि अभी निर्णय लेना उचित है या नहीं।"
-    :"This is a free daily mind check to know if it’s the right time to decide.";
-  startBtn.innerText=lang==="hi"?"आज का टेस्ट करें":"Start Test";
-  qTitle.innerText=lang==="hi"?"🌪 मानसिक प्रदूषण सूचकांक":"🌪 Mental Pollution Index";
-  meterBtn.innerText=lang==="hi"?"मीटर देखें":"Check Meter";
-  if(page1.classList.contains("active")) renderQuestions();
+  alert("Questions Hindi-centric hain. English pack next update me add hoga.");
 }
 </script>
 
