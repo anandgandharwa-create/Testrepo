@@ -35,7 +35,7 @@ header{text-align:center;font-size:23px;font-weight:600;margin-bottom:14px;}
   border-radius:18px;
   padding:18px;
   margin-bottom:14px;
-  line-height:1.7;
+  line-height:1.8;
 }
 
 /* OPTIONS */
@@ -160,32 +160,28 @@ button{
 <script>
 let lang="hi",score=0,zone="",spun=false;
 
-/* 🔥 Typing Effect */
-function typeText(text, el, callback, speed=40){
+/* ✅ WORD-BY-WORD typing (Hindi-safe) */
+function typeByWords(text, el, callback, speed=140){
   el.innerText="";
+  const words=text.split(" ");
   let i=0;
   const timer=setInterval(()=>{
-    el.innerText+=text.charAt(i);
+    el.innerText += (i===0?"":" ") + words[i];
     i++;
-    if(i>=text.length){
+    if(i>=words.length){
       clearInterval(timer);
       if(callback) callback();
     }
   },speed);
 }
 
-/* 🔥 20 BILINGUAL QUESTIONS */
+/* QUESTIONS */
 const questionBank=[
 {hi:"आज मन में उलझन की तीव्रता कितनी रही?",en:"How intense was mental confusion today?"},
 {hi:"आज दिन में मानसिक दबाव कितना महसूस हुआ?",en:"How much mental pressure did you feel today?"},
 {hi:"आज मन में थकान की अनुभूति कितनी रही?",en:"How much mental fatigue did you feel today?"},
 {hi:"आज ध्यान भटकने की समस्या कितनी रही?",en:"How much did your focus drift today?"},
-{hi:"आज डर ने मन पर कितनी पकड़ बनाई?",en:"How strongly did fear affect your mind today?"},
-{hi:"आज मन को शांत रखना कितना कठिन था?",en:"How difficult was it to stay calm today?"},
-{hi:"आज निर्णय लेने में कितनी उलझन रही?",en:"How confusing was decision-making today?"},
-{hi:"आज मन कितना बोझिल महसूस हुआ?",en:"How heavy did your mind feel today?"},
-{hi:"आज भविष्य की चिंता कितनी रही?",en:"How much did future worries affect you today?"},
-{hi:"आज आत्मविश्वास कितना डगमगाया?",en:"How much did your confidence waver today?"}
+{hi:"आज डर ने मन पर कितनी पकड़ बनाई?",en:"How strongly did fear affect your mind today?"}
 ];
 
 let activeQs=[];
@@ -213,7 +209,7 @@ function goMeter(){
   score=0;
   for(let i=0;i<5;i++){
     const a=document.querySelector(`input[name="q${i}"]:checked`);
-    if(!a){alert(lang==="hi"?"सभी प्रश्नों के उत्तर दें":"Please answer all questions");return;}
+    if(!a){alert("सभी प्रश्नों के उत्तर दें");return;}
     score+=parseInt(a.value);
   }
   page1.classList.remove("active");
@@ -272,7 +268,7 @@ function showDecision(){
   meditationText.classList.remove("show");
   meditationText.style.display="none";
 
-  typeText(decision[lang][zone],decisionText,()=>{
+  typeByWords(decision[lang][zone],decisionText,()=>{
     meditationText.innerText=meditation[lang][zone];
     meditationText.style.display="block";
     meditationText.classList.add("show");
