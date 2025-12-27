@@ -95,7 +95,10 @@ button{
   font-size:15px;line-height:1.6;
   display:none;opacity:0;
 }
-.meditation.show{display:block;animation:fadeIn 1s ease forwards;}
+.meditation.show{
+  display:block;
+  animation:fadeIn 1s ease forwards;
+}
 @keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
 </style>
 </head>
@@ -157,6 +160,20 @@ button{
 <script>
 let lang="hi",score=0,zone="",spun=false;
 
+/* 🔥 Typing Effect */
+function typeText(text, el, callback, speed=40){
+  el.innerText="";
+  let i=0;
+  const timer=setInterval(()=>{
+    el.innerText+=text.charAt(i);
+    i++;
+    if(i>=text.length){
+      clearInterval(timer);
+      if(callback) callback();
+    }
+  },speed);
+}
+
 /* 🔥 20 BILINGUAL QUESTIONS */
 const questionBank=[
 {hi:"आज मन में उलझन की तीव्रता कितनी रही?",en:"How intense was mental confusion today?"},
@@ -168,17 +185,7 @@ const questionBank=[
 {hi:"आज निर्णय लेने में कितनी उलझन रही?",en:"How confusing was decision-making today?"},
 {hi:"आज मन कितना बोझिल महसूस हुआ?",en:"How heavy did your mind feel today?"},
 {hi:"आज भविष्य की चिंता कितनी रही?",en:"How much did future worries affect you today?"},
-{hi:"आज आत्मविश्वास कितना डगमगाया?",en:"How much did your confidence waver today?"},
-{hi:"आज भावनाएँ कितनी हावी रहीं?",en:"How dominant were emotions today?"},
-{hi:"आज मन वर्तमान में रहने में कितना कठिन लगा?",en:"How hard was it to stay present today?"},
-{hi:"आज अपने निर्णयों पर भरोसा कितना कम लगा?",en:"How low was your trust in decisions today?"},
-{hi:"आज तुलना करने की आदत कितनी रही?",en:"How much did you compare yourself today?"},
-{hi:"आज मन में स्पष्टता की कमी कितनी रही?",en:"How much clarity was lacking today?"},
-{hi:"आज आंतरिक शांति कितनी कम महसूस हुई?",en:"How little inner peace did you feel today?"},
-{hi:"आज नियंत्रण रखने की इच्छा कितनी रही?",en:"How strong was the need for control today?"},
-{hi:"आज निर्णय टालने की प्रवृत्ति कितनी रही?",en:"How much did you want to delay decisions today?"},
-{hi:"आज मन को स्थिर करने में कितना प्रयास लगा?",en:"How much effort was needed to calm your mind today?"},
-{hi:"आज मानसिक शोर कितना अधिक रहा?",en:"How intense was mental noise today?"}
+{hi:"आज आत्मविश्वास कितना डगमगाया?",en:"How much did your confidence waver today?"}
 ];
 
 let activeQs=[];
@@ -194,9 +201,9 @@ function renderQuestions(){
   let h="";
   activeQs.forEach((q,i)=>{
     h+=`<strong>${i+1}. ${lang==="hi"?q.hi:q.en}</strong>
-    <label class="option red"><input type="radio" name="q${i}" value="3"> <span>${lang==="hi"?"काफ़ी ज़्यादा":"Quite a lot"}</span></label>
-    <label class="option yellow"><input type="radio" name="q${i}" value="2"> <span>${lang==="hi"?"थोड़ा":"A little"}</span></label>
-    <label class="option green"><input type="radio" name="q${i}" value="1"> <span>${lang==="hi"?"लगभग नहीं":"Almost not"}</span></label>
+    <label class="option red"><input type="radio" name="q${i}" value="3"> ${lang==="hi"?"काफ़ी ज़्यादा":"Quite a lot"}</label>
+    <label class="option yellow"><input type="radio" name="q${i}" value="2"> ${lang==="hi"?"थोड़ा":"A little"}</label>
+    <label class="option green"><input type="radio" name="q${i}" value="1"> ${lang==="hi"?"लगभग नहीं":"Almost not"}</label>
     <hr style="opacity:.2">`;
   });
   questions.innerHTML=h;
@@ -216,21 +223,18 @@ function goMeter(){
   meterFill.style.width=p+"%";
   meterFill.className="meter-fill";
 
-  if(p>70){zone="red";meterFill.classList.add("red");meterText.innerText=lang==="hi"?"अधिक मानसिक प्रदूषण":"High Mental Pollution";}
-  else if(p>40){zone="yellow";meterFill.classList.add("yellow");meterText.innerText=lang==="hi"?"मध्यम मानसिक प्रदूषण":"Moderate Mental Pollution";}
-  else{zone="green";meterFill.classList.add("green");meterText.innerText=lang==="hi"?"कम मानसिक प्रदूषण":"Low Mental Pollution";}
+  if(p>70){zone="red";meterFill.classList.add("red");meterText.innerText="High Mental Pollution";}
+  else if(p>40){zone="yellow";meterFill.classList.add("yellow");meterText.innerText="Moderate Mental Pollution";}
+  else{zone="green";meterFill.classList.add("green");meterText.innerText="Low Mental Pollution";}
 }
 
-function goSpin(){
-  page2.classList.remove("active");
-  page3.classList.add("active");
-}
+function goSpin(){page2.classList.remove("active");page3.classList.add("active");}
 
 function spinNow(){
   if(spun)return;
   spun=true;
   wheel.classList.add("glow");
-  wheel.style.transform="rotate("+(zone==="red"?1440+30:zone==="yellow"?1440+150:1440+270)+"deg)";
+  wheel.style.transform="rotate("+(zone==="red"?1470:zone==="yellow"?1590:1710)+"deg)";
   setTimeout(showDecision,4000);
 }
 
@@ -265,9 +269,14 @@ function showDecision(){
   };
 
   decisionText.className="decision "+zone;
-  decisionText.innerText=decision[lang][zone];
-  meditationText.innerText=meditation[lang][zone];
-  meditationText.classList.add("show");
+  meditationText.classList.remove("show");
+  meditationText.style.display="none";
+
+  typeText(decision[lang][zone],decisionText,()=>{
+    meditationText.innerText=meditation[lang][zone];
+    meditationText.style.display="block";
+    meditationText.classList.add("show");
+  });
 }
 
 function toggleLang(){
